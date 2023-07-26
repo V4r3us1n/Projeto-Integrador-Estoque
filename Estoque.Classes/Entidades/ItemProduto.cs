@@ -12,11 +12,12 @@ namespace Estoque.Classes.Entidades
         public int QuantidadeMovimentoProduto {get; private set;}
         public int ProdutoId {get;private set;}
         public double PrecoItemProduto {get;private set;}
+        public string NomeUsuario {get;private set;}
         private static int quantidadeItemProdutosCadatrados = 0;
 
         public DateTime DataMovimento {get; private set;}
 
-        public ItemProduto(string nomeProduto, int produtoId, int quantidadeMovimentoProduto, double precoItemProduto)
+        public ItemProduto(string nomeProduto, int produtoId, int quantidadeMovimentoProduto, double precoItemProduto, string nomeUsuario)
         {
             AdicionarNovoItemProduto();
             IdItemProduto = quantidadeItemProdutosCadatrados;
@@ -25,6 +26,7 @@ namespace Estoque.Classes.Entidades
             QuantidadeMovimentoProduto = quantidadeMovimentoProduto;
             PrecoItemProduto = precoItemProduto;
             DataMovimento = DateTime.Now;
+            NomeUsuario = nomeUsuario;
         }
 
         public void AdicionarDataMovimento(DateTime dataMovimento)
@@ -39,7 +41,7 @@ namespace Estoque.Classes.Entidades
 
         public override string ToString()
         {
-            return $"{IdItemProduto};{ProdutoId};{NomeProduto};{QuantidadeMovimentoProduto};{PrecoItemProduto};{DataMovimento}";
+            return $"{IdItemProduto};{ProdutoId};{NomeProduto};{QuantidadeMovimentoProduto};{PrecoItemProduto};{DataMovimento};{NomeUsuario}";
         }
     }
 }

@@ -7,7 +7,7 @@ namespace Estoque.Classes.Interfaces
 {
     public interface IMovimentoEstoque
     {
-        bool EntradaEstoque(CrudProduto listaProdutos);
-        bool SaidaEstoque(CrudProduto listaProdutos);
+        void EntradaEstoque(CrudProduto listaProdutos, string nomeUsuario);
+        void SaidaEstoque(CrudProduto listaProdutos, string nomeUsuario);
     }
 }

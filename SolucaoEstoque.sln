@@ -3,17 +3,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Estoque.ConsoleApp", "Estoque.ConsoleApp\Estoque.ConsoleApp.csproj", "{571ABD73-29F2-424D-A0C3-EFE9744C871D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Estoque.ConsoleApp", "Estoque.ConsoleApp\Estoque.ConsoleApp.csproj", "{571ABD73-29F2-424D-A0C3-EFE9744C871D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Estoque.Classes", "Estoque.Classes\Estoque.Classes.csproj", "{07A81854-5258-4F5C-919A-A9B5778C4733}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Estoque.Classes", "Estoque.Classes\Estoque.Classes.csproj", "{07A81854-5258-4F5C-919A-A9B5778C4733}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Estoque.Test", "Estoque.Test\Estoque.Test.csproj", "{EB476692-C38A-4DE6-AD17-00DCC2621CC3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{571ABD73-29F2-424D-A0C3-EFE9744C871D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -24,5 +23,12 @@ Global
 		{07A81854-5258-4F5C-919A-A9B5778C4733}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{07A81854-5258-4F5C-919A-A9B5778C4733}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{07A81854-5258-4F5C-919A-A9B5778C4733}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB476692-C38A-4DE6-AD17-00DCC2621CC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB476692-C38A-4DE6-AD17-00DCC2621CC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB476692-C38A-4DE6-AD17-00DCC2621CC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB476692-C38A-4DE6-AD17-00DCC2621CC3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

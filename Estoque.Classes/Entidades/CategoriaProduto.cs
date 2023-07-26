@@ -36,11 +36,6 @@ namespace Estoque.Classes
             quantidadeCategoriasProduto++;
         }
 
-        public void EditarNomeCategoriaProduto(string nomeCategoriaProdutoEditado)
-        {
-            NomeCategoriaProduto = nomeCategoriaProdutoEditado;
-        }
-
         public override string ToString()
         {
             return $"{IdCategoriaProduto};{NomeCategoriaProduto};{quantidadeCategoriasProduto};{DataCadastro};{DataExclusao}";

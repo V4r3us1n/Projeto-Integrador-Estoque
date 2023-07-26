@@ -37,12 +37,13 @@ namespace Estoque.Classes.Entidades
 
         //Movimento de Entrada
 
-        public bool EntradaEstoque(CrudProduto listaProdutos)
+        public void EntradaEstoque(CrudProduto listaProdutos, string nomeUsuario)
         {
             Console.WriteLine("========== ENTRADA DE ESTOQUE ==========");
 
             int produtoId = 0;
             int quantidadeEntradaProduto = 0;
+            double precoCompraProduto = 0;
 
             listaProdutos.ListarProdutos();
 
@@ -52,35 +53,36 @@ namespace Estoque.Classes.Entidades
                 Console.Write("\nDigite a quantidade de produtos que foi comprado: ");
                 if (ValidarQuantidadeCompraProduto(ref quantidadeEntradaProduto) != false)
                 {
-                    foreach (KeyValuePair<int, Produto1> pair in listaProdutos.ExibirListaProdutos())
+                    Console.Write("Digite o preço pelo qual cada produto  foi comprado: R$");
+                    if (ValidarPrecoProduto(ref precoCompraProduto) != false)
                     {
-                        if (pair.Key == produtoId)
+                        foreach (KeyValuePair<int, Produto1> pair in listaProdutos.ExibirListaProdutos())
                         {
-                            pair.Value.AdicionarUnidadeProdutoNoEstoque(quantidadeEntradaProduto);
-                            Console.WriteLine("\n[AVISO!] Compra efetuada com Sucesso!");
-                            var unidade = new ItemProduto(pair.Value.Nome, pair.Key, quantidadeEntradaProduto, pair.Value.PrecoCompra); 
+                            if (pair.Key == produtoId)
+                            {
+                                pair.Value.AdicionarUnidadeProdutoNoEstoque(quantidadeEntradaProduto);
+                                Console.WriteLine("\n[AVISO!] Compra efetuada com Sucesso!");
+                                var unidade = new ItemProduto(pair.Value.Nome, pair.Key, quantidadeEntradaProduto, precoCompraProduto, nomeUsuario); 
 
-                            AdicionarHistoricoEntrada(unidade);
-                            Console.ReadKey();
-                            return true;
+                                AdicionarHistoricoEntrada(unidade);
+                                listaProdutos.SalvarInfo();
+                            }
                         }
                     }
-
                 }
-
             }
             Console.ReadKey();
-            return false;
         }
 
         //Movimento de Saída
-        public bool SaidaEstoque(CrudProduto listaProdutos)
+        public void SaidaEstoque(CrudProduto listaProdutos, string nomeUsuario)
         {
             Console.WriteLine("========== SAÍDA DE ESTOQUE ==========");
 
             int idProduto = 0;
             int quantidadeProdutoSaida = 0;
             int quantidadeProdutoEmEstoque = 0;
+            double precoVendaProduto = 0;
 
             listaProdutos.ListarProdutos();
 
@@ -99,6 +101,11 @@ namespace Estoque.Classes.Entidades
                 Console.Write("Digite o a quantidade de produtos que saíram: ");
                 if (ValidarQuantidadeSaidaProduto(ref quantidadeProdutoSaida, quantidadeProdutoEmEstoque) != false)
                 {
+                    Console.Write("Digite o preço pelo qual cada produto foi vendido: R$");
+                    if (ValidarPrecoProduto(ref precoVendaProduto) != false)
+                    {
+
+                    }
                     foreach (KeyValuePair<int, Produto1> pair in listaProdutos.ExibirListaProdutos())
                     {
                         if (pair.Key == idProduto)
@@ -107,17 +114,15 @@ namespace Estoque.Classes.Entidades
 
                             Console.WriteLine("[AVISO!] Venda efetuada com Sucesso!");
 
-                            var produto = new ItemProduto(pair.Value.Nome, pair.Key, quantidadeProdutoSaida, pair.Value.PrecoCompra);
+                            var produto = new ItemProduto(pair.Value.Nome, pair.Key, quantidadeProdutoSaida, precoVendaProduto, nomeUsuario);
 
                             AdicionarHistoricoSaida(produto);
-                            Console.ReadKey();
-                            return true;
+                            listaProdutos.SalvarInfo();
                         }
                     }
                 }
             }    
             Console.ReadKey();
-            return false;
         }
 
         //Gerando Relatórios
@@ -132,11 +137,16 @@ namespace Estoque.Classes.Entidades
                 Console.WriteLine("========== RELATÓRIO MOVIMENTO ENTRADA ==========");
                 foreach (var item in historicoEntrada)
                 {
-                    Console.WriteLine($"MOVIMENTAÇÃO: {item.DataMovimento}");
+                    Console.WriteLine($"DATA DO MOVIMENTO: {item.DataMovimento}");
+                    Console.WriteLine($"USUÁRIO QUE REALIZOU O MOVIMENTO: {item.NomeUsuario}");
                     Console.WriteLine($"ID Movimento: {item.IdItemProduto}");
                     Console.WriteLine($"ID Produto: {item.ProdutoId}");
                     Console.WriteLine($"Nome: {item.NomeProduto}");
+                    Console.WriteLine($"Preço: R${item.PrecoItemProduto.ToString("F")}");
                     Console.WriteLine($"Quantidade: {item.QuantidadeMovimentoProduto}");
+                    double valorTotal = Double.Parse($"{item.QuantidadeMovimentoProduto}");
+                    valorTotal *= item.PrecoItemProduto;
+                    Console.WriteLine($"Valor Total: R${valorTotal.ToString("F")}");
                     Console.WriteLine("=================================================");
                 }
             }
@@ -156,11 +166,16 @@ namespace Estoque.Classes.Entidades
                 Console.WriteLine("========== RELATÓRIO MOVIMENTO SAÍDA ==========");
                 foreach (var item in historicoSaida)
                 {
-                    Console.WriteLine($"MOVIMENTAÇÃO: {item.DataMovimento}");
+                    Console.WriteLine($"DATA DO MOVIMENTO: {item.DataMovimento}");
+                    Console.WriteLine($"USUÁRIO QUE REALIZOU O MOVIMENTO: {item.NomeUsuario}");
                     Console.WriteLine($"ID Movimento: {item.IdItemProduto}");
                     Console.WriteLine($"ID Produto: {item.ProdutoId}");
                     Console.WriteLine($"Nome: {item.NomeProduto}");
+                    Console.WriteLine($"Preço: R${item.PrecoItemProduto.ToString("F")}");
                     Console.WriteLine($"Quantidade: {item.QuantidadeMovimentoProduto}");
+                    double valorTotal = Double.Parse($"{item.QuantidadeMovimentoProduto}");
+                    valorTotal *= item.PrecoItemProduto;
+                    Console.WriteLine($"Valor Total: R${valorTotal.ToString("F")}");
                     Console.WriteLine("===============================================");
                 }
 
@@ -177,13 +192,13 @@ namespace Estoque.Classes.Entidades
             Console.WriteLine("==================PRODUTOS===============");
             foreach (var item in historicoProduto)
             {
-                if (DateTime.Parse(item[6]) != new DateTime(0))
+                if (DateTime.Parse(item[5]) != new DateTime(0))
                 {
-                    Console.WriteLine($"Data Exclusão: {item[6]}");
+                    Console.WriteLine($"Data Exclusão: {item[5]}");
                 }
                 else
                 {
-                    Console.WriteLine($"Data de Cadastro: {item[5]}");
+                    Console.WriteLine($"Data de Cadastro: {item[4]}");
                 }
                 Console.WriteLine($"Nome: {item[1]}");
                 Console.WriteLine($"ID: {item[0]}");
@@ -267,17 +282,17 @@ namespace Estoque.Classes.Entidades
             }
         }
 
-        private bool ValidarPrecoProdutoCompra(ref double precoProdutoCompra)
+        private bool ValidarPrecoProduto(ref double precoProduto)
         {
             try
             {
-                precoProdutoCompra = double.Parse(Console.ReadLine());
+                precoProduto = double.Parse(Console.ReadLine());
 
-                if (precoProdutoCompra < 0.01)
+                if (precoProduto < 0.01)
                 {
                     throw new ArgumentException("[ERRO!] O VALOR DE COMPRA NÃO PODE SER INFERIOR A R$0,01!");
                 }
-                else if ($"{precoProdutoCompra}".Length > precoProdutoCompra.ToString("F").Length)
+                else if ($"{precoProduto}".Length > precoProduto.ToString("F").Length)
                 {
                     throw new NotFiniteNumberException("[ERRO!] SÓ PODE SER COLOCADO 2 CASAS DECIMAIS!");
                 }
@@ -295,56 +310,6 @@ namespace Estoque.Classes.Entidades
                 return false;
             }
             catch (NotFiniteNumberException ex)
-            {
-                Console.WriteLine(ex.Message);
-                return false;
-            }
-        }
-
-        private bool ValidarDiaValidadeProduto(ref int diaValidadeProduto)
-        {
-            try
-            {
-                diaValidadeProduto = int.Parse(Console.ReadLine());
-
-                return true;
-            }
-            catch (FormatException ex)
-            {
-                Console.WriteLine(ex.Message);
-                return false;
-            }
-        }
-
-        private bool ValidarMesValidadeProduto(ref int mesValidadeProduto, int diaValidadeProduto)
-        {
-            try
-            {
-                if (mesValidadeProduto < 0 || mesValidadeProduto > 12)
-                {
-                    Console.WriteLine("[AVISO] digite um mês válido!");
-                    return false;
-                }
-                mesValidadeProduto = int.Parse(Console.ReadLine());
-
-                return true;
-            }
-            catch (FormatException ex)
-            {
-                Console.WriteLine(ex.Message);
-                return false;
-            }
-        }
-
-        private bool ValidarAnoValidadeProduto(ref int anoValidadeProduto, int mesValidadeProduto, int diaValidadeProduto)
-        {
-            try
-            {
-                anoValidadeProduto = int.Parse(Console.ReadLine());
-
-                return true;
-            }
-            catch (FormatException ex)
             {
                 Console.WriteLine(ex.Message);
                 return false;
@@ -455,12 +420,13 @@ namespace Estoque.Classes.Entidades
                                 movimentoProdutoString[2],
                                 Int32.Parse(movimentoProdutoString[1]),
                                 Int32.Parse(movimentoProdutoString[3]),
-                                Double.Parse(movimentoProdutoString[4])
+                                Double.Parse(movimentoProdutoString[4]),
+                                movimentoProdutoString[6]
                             );
 
                             itemProdutoTemp.AdicionarDataMovimento(DateTime.Parse(movimentoProdutoString[5]));
 
-                            if (movimentoProdutoString[6] == "Entrada")
+                            if (movimentoProdutoString[7] == "Entrada")
                             {
                                 historicoMovimentoEntradaProdutoTemp.Add(itemProdutoTemp);
                             }

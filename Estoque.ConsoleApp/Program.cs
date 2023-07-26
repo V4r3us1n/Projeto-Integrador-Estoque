@@ -38,11 +38,11 @@ namespace Estoque.ConsoleApp
                 //EXIBINDO MENU LOGIN
                 ExibirMenuLogin(ref nomeUsuario, ref senhaUsuario);
                 Console.Clear();
-                Console.Clear();
 
                 if (ValidarUsuario(ref nomeUsuario, ref senhaUsuario) == true)
                 {
-                    if (nomeUsuario.ToLower() == userRoot.NomeUsuario)
+                    nomeUsuario = nomeUsuario.ToLower();
+                    if (nomeUsuario == userRoot.NomeUsuario)
                     {
                         do
                         {
@@ -76,13 +76,13 @@ namespace Estoque.ConsoleApp
                                         {
                                             case 1:
                                                 //Movimento de Entrada no Estoque
-                                                estoque.EntradaEstoque(listaProdutos);
+                                                estoque.EntradaEstoque(listaProdutos, nomeUsuario);
                                                 Console.ReadKey();
 
                                                 break;
                                             case 2:
                                                 //Movimento de Saída no Estoque
-                                                estoque.SaidaEstoque(listaProdutos);
+                                                estoque.SaidaEstoque(listaProdutos, nomeUsuario);
                                                 Console.ReadKey();
 
                                                 break;
@@ -113,6 +113,7 @@ namespace Estoque.ConsoleApp
                                             ExibirMenuFuncionarios();
                                             Console.Write("Digite a Opção Desejada: ");
                                         } while (ValidarOpcao(ref opcaoMenuFuncionario, 5) == false);
+                                        Console.Clear();
 
                                         switch (opcaoMenuFuncionario)
                                         {
@@ -163,6 +164,7 @@ namespace Estoque.ConsoleApp
                                             ExibirMenuProdutos();
                                             Console.Write("Digite a Opção Desejada: ");
                                         } while (ValidarOpcao(ref opcaoMenuProduto, 5) == false);
+                                        Console.Clear();
 
                                         switch (opcaoMenuProduto)
                                         {
@@ -225,6 +227,7 @@ namespace Estoque.ConsoleApp
                                             ExibirMenuCategoriaProduto();
                                             Console.Write("Digite a Opção Desejada: ");
                                         } while (ValidarOpcao(ref opcaoMenuCategoriaProduto, 5) == false);
+                                        Console.Clear();
 
                                         switch (opcaoMenuCategoriaProduto)
                                         {
@@ -271,6 +274,7 @@ namespace Estoque.ConsoleApp
                                             ExibirMenuRelatorio();
                                             Console.Write("Digite a Opção Desejada: ");
                                         } while (ValidarOpcao(ref opcaoMenuRelatorio, 5) == false);
+                                        Console.Clear();
 
                                         switch (opcaoMenuRelatorio)
                                         {
@@ -327,6 +331,7 @@ namespace Estoque.ConsoleApp
                                 ExibirMenuPrincipal();
                                 Console.Write("Digite a Opção Desejada: ");
                             } while (ValidarOpcao(ref opcaoMenuPrincipal, 2) == false);
+                            Console.Clear();
 
                             switch (opcaoMenuPrincipal)
                             {
@@ -345,17 +350,18 @@ namespace Estoque.ConsoleApp
                                             ExibirMenuEstoque();
                                             Console.Write("Digite a Opção Desejada: ");
                                         } while (ValidarOpcao(ref opcaoMenuEstoque, 3) == false);
+                                        Console.Clear();
 
                                         switch (opcaoMenuEstoque)
                                         {
                                             case 1:
                                                 //Movimento de Entrada no Estoque
-                                                estoque.EntradaEstoque(listaProdutos);
+                                                estoque.EntradaEstoque(listaProdutos, nomeUsuario);
 
                                                 break;
                                             case 2:
                                                 //Movimento de Saída no Estoque
-                                                estoque.SaidaEstoque(listaProdutos);
+                                                estoque.SaidaEstoque(listaProdutos, nomeUsuario);
 
                                                 break;
                                             case 3:
@@ -381,7 +387,6 @@ namespace Estoque.ConsoleApp
                         } while (sairMenuPrincipal == false);
                     }
                 }
-
             } while (sairDoPrograma == false);
         }
 
@@ -506,6 +511,8 @@ namespace Estoque.ConsoleApp
             catch (UsuarioNaoCadastradoException ex)
             {
                 Console.WriteLine(ex.Message);
+                Console.ReadKey();
+                Console.Clear();
                 return false;
             }
         }
@@ -520,7 +527,7 @@ namespace Estoque.ConsoleApp
 
                 if (opcao < opcaoMinima || opcao > opcaoMaxima)
                 {
-                    throw new ArgumentOutOfRangeException("[ERRO!] OPÇÃO INVÁLIDA!");
+                    throw new OpcaoInvalidaException();
                 }
 
                 return true;
@@ -530,9 +537,11 @@ namespace Estoque.ConsoleApp
                 Console.WriteLine(ex.Message);
                 return false;
             }
-            catch (ArgumentOutOfRangeException ex)
+            catch (OpcaoInvalidaException ex)
             {
                 Console.WriteLine(ex.Message);
+                Console.ReadKey();
+                Console.Clear();
                 return false;
             }
         }

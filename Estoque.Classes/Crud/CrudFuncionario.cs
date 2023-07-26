@@ -21,16 +21,38 @@ namespace Estoque.Classes
             return listaFuncionarios;
         }
 
-        private string caminhoBD = "BancoDeDados/BD_Funcionarios.txt";
+        private string caminhoBD_Funcionarios = "BancoDeDados/BD_Funcionarios.txt";
+
+        //Gerando Relatório
+        public void GeraRelatorioFuncionario()
+        {
+            if (listaFuncionarios.Count == 0)
+            {
+                Console.WriteLine("[AVISO] Nenhum funcionário foi cadastrado.");
+
+            }
+            else
+            {
+                foreach (var item in listaFuncionarios)
+                {
+                    Console.WriteLine("==================RELATÓRIO===============");
+                    Console.WriteLine($"Nome: {item.Value.NomeUsuario}");
+                    Console.WriteLine($"Senha: {item.Value.Senha}");
+                    Console.WriteLine("=========================================");
+                }
+
+            }
+            Console.WriteLine("");
+            Console.ReadKey();
+        }
 
         //Adicionando Funcionario
-        public bool AdicionarUserFuncionario()
+        public void AdicionarUserFuncionario()
         {
             string nomeUsuario = "";
             string senhaUsuario = "";
             bool continuarCadastro = false;
             string respostaContinuarCadastro = "";
-            int tamanhoListaFuncionario = listaFuncionarios.Count;
 
             do
             {
@@ -76,15 +98,6 @@ namespace Estoque.Classes
             } while (continuarCadastro == true);
 
             Console.ReadKey();
-            if (tamanhoListaFuncionario != listaFuncionarios.Count)
-            {
-                return true;
-            }
-            else
-            {
-
-                return false;
-            }
         }
 
         //Listando Funcionarios
@@ -102,7 +115,7 @@ namespace Estoque.Classes
         }
 
         //Consultando Funcionário
-        public bool ConsultarFuncionario()
+        public void ConsultarFuncionario()
         {
             string usuarioConsulta = "";
             bool usuarioEncontrado = false;
@@ -132,19 +145,10 @@ namespace Estoque.Classes
 
             Console.WriteLine("=========================================");
             Console.ReadKey();
-            
-            if (usuarioEncontrado == false)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
         }
 
         //Excluindo Funcionario
-        public bool ExcluirFuncionario()
+        public void ExcluirFuncionario()
         {
             string usuarioExcluir = "";
 
@@ -157,34 +161,12 @@ namespace Estoque.Classes
                 SalvarInformacoesDoBD_Funcionarios();
                 Console.WriteLine("[AVISO!] Usuário Excluído com Sucesso!");
                 Console.ReadKey();
-                return true;
             }
             Console.ReadKey();
-            return false;
-        }
-
-        //Salvar Informações no Banco
-        private void SalvarInformacoesDoBD_Funcionarios()
-        {
-            if (!File.Exists(caminhoBD))
-            {
-                File.Delete(caminhoBD);
-            }
-
-            using (Stream saida = File.Open(caminhoBD, FileMode.Create))
-            {
-                using (StreamWriter escritor = new StreamWriter(saida))
-                {
-                    foreach (KeyValuePair<string, UserFuncionario> funcionario in listaFuncionarios)
-                    {
-                        escritor.WriteLine(funcionario.Value.ToString());
-                    }
-                }
-            }
         }
 
         //VALIDAÇÕES USUÁRIO
-        public bool ValidarNovoNomeUsuario(ref string nomeUsuario)
+        private bool ValidarNovoNomeUsuario(ref string nomeUsuario)
         {
             bool nomeUsuarioJaCadastrado = false;
 
@@ -224,7 +206,7 @@ namespace Estoque.Classes
             }
         }
 
-        public bool ValidarSenhaUsuario(ref string senhaUsuario)
+        private bool ValidarSenhaUsuario(ref string senhaUsuario)
         {
             try
             {
@@ -244,7 +226,7 @@ namespace Estoque.Classes
             }
         }
 
-        public bool ValidarRespostaSN(ref string respostaSN)
+        private bool ValidarRespostaSN(ref string respostaSN)
         {
             try
             {
@@ -264,7 +246,7 @@ namespace Estoque.Classes
             }
         }
 
-        public bool ValidarUsuarioExcluir(ref string usuario)
+        private bool ValidarUsuarioExcluir(ref string usuario)
         {
             bool usuarioCadastrado = false;
 
@@ -293,35 +275,33 @@ namespace Estoque.Classes
                 return false;
             }
         }
-    
-        public void GeraRelatorioFuncionario()
+
+        //Salvar Informações no Banco
+        private void SalvarInformacoesDoBD_Funcionarios()
         {
-            if (listaFuncionarios.Count == 0)
+            if (!File.Exists(caminhoBD_Funcionarios))
             {
-                Console.WriteLine("[AVISO] Nenhum funcionário foi cadastrado.");
-
+                File.Delete(caminhoBD_Funcionarios);
             }
-            else
+
+            using (Stream saida = File.Open(caminhoBD_Funcionarios, FileMode.Create))
             {
-                foreach (var item in listaFuncionarios)
+                using (StreamWriter escritor = new StreamWriter(saida))
                 {
-                    Console.WriteLine("==================RELATÓRIO===============");
-                    Console.WriteLine($"Nome: {item.Value.NomeUsuario}");
-                    Console.WriteLine($"Senha: {item.Value.Senha}");
-                    Console.WriteLine("=========================================");
+                    foreach (KeyValuePair<string, UserFuncionario> funcionario in listaFuncionarios)
+                    {
+                        escritor.WriteLine(funcionario.Value.ToString());
+                    }
                 }
-
             }
-            Console.WriteLine("");
-            Console.ReadKey();
         }
 
         //Carregar Dados dos Funcionários
         private void CarregarDadosFuncionarios()
         {
-            if (!File.Exists(caminhoBD))
+            if (!File.Exists(caminhoBD_Funcionarios))
             {
-                using (Stream criandoBD = File.Open(caminhoBD, FileMode.Create))
+                using (Stream criandoBD = File.Open(caminhoBD_Funcionarios, FileMode.Create))
                 {
 
                 }
@@ -330,7 +310,7 @@ namespace Estoque.Classes
             {
                 Dictionary<string, UserFuncionario> listaFuncionariosTemp = new Dictionary<string, UserFuncionario>();
 
-                using (Stream bancoDeDados = File.Open(caminhoBD, FileMode.Open))
+                using (Stream bancoDeDados = File.Open(caminhoBD_Funcionarios, FileMode.Open))
                 {
                     using (StreamReader leitor = new(bancoDeDados))
                     {

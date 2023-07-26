@@ -35,7 +35,7 @@ namespace Estoque.Classes
         }
 
         //Cadastran Produto
-        public bool CadastrarProduto(CrudCategoriaProduto categorias)
+        public void CadastrarProduto(CrudCategoriaProduto categorias)
         {
 
             if (ValidarSeHaCategoriasCadastradas(categorias))
@@ -51,40 +51,32 @@ namespace Estoque.Classes
                 Console.Write("Digite o Id da Categoria do Produto: ");
                 int categoriaProdutoId = -1;
                 int qtdeProduto = 0;
-                double precoProduto = -1;
 
                 if (ValidarCategoriaProduto(ref categoriaProdutoId, categorias.ExibirListaCategoriaProduto()) != false)
                 {
-                    Console.Write("Digite o valor do Produto: R$");
-                    if (ValidarPrecoProduto(ref precoProduto) != false)
+
+                    var produto = new Produto1(nomeProduto, categoriaProdutoId, qtdeProduto);
+
+                    listaProdutos.Add(produto.IdProduto, produto);
+
+                    string[] historico = new string[]
                     {
-                        var produto = new Produto1(nomeProduto, categoriaProdutoId, qtdeProduto, precoProduto);
+                        $"{produto.IdProduto}",
+                        $"{produto.Nome}",
+                        $"{produto.CategoriaProdutoId}",
+                        $"{produto.QuantidadeProduto}",
+                        $"{produto.DataCadastro}",
+                        $"{produto.DataExclusao}"
+                    };
+                    historicoProdutos.Add(historico);
 
-                        listaProdutos.Add(produto.IdProduto, produto);
-
-                        string[] historico = new string[]
-                        {
-                            $"{produto.IdProduto}",
-                            $"{produto.Nome}",
-                            $"{produto.CategoriaProdutoId}",
-                            $"{produto.QuantidadeProduto}",
-                            $"{produto.PrecoCompra}",
-                            $"{produto.DataCadastro}",
-                            $"{produto.DataExclusao}"
-                        };
-                        historicoProdutos.Add(historico);
-
-                        SalvarInformacoesDoBD_Produtos();
-                        SalvarInformacoesDoBanco_HistoricoProduco();
-                        Console.WriteLine("Produto Cadastrado com sucesso!");
-                        Console.ReadKey();
-                        return true;
-                    }
+                    SalvarInformacoesDoBD_Produtos();
+                    SalvarInformacoesDoBD_HistoricoProduto();
+                    Console.WriteLine("Produto Cadastrado com sucesso!");
+                    Console.ReadKey();
                 }
             }
             Console.ReadKey();
-            return false;
-
         }
 
         //Listar Produto
@@ -94,8 +86,8 @@ namespace Estoque.Classes
             foreach (var produto in ExibirListaProdutos())
             {
                 Console.WriteLine($"[ID: {produto.Key}] \n[Nome: {produto.Value.Nome}] \n" +
-                    $"[Quantidade: {produto.Value.QuantidadeProduto}] \n[Categoria {produto.Value.CategoriaProdutoId}]" +
-                    $"\n[Preço:{produto.Value.PrecoCompra}]");
+                    $"[Quantidade: {produto.Value.QuantidadeProduto}] \n" +
+                    $"[Categoria {produto.Value.CategoriaProdutoId}]");
                 Console.WriteLine("=========================================");
             }
             Console.WriteLine("");
@@ -103,7 +95,7 @@ namespace Estoque.Classes
         }
 
         //Consultar Produto
-        public bool ConsultarProduto()
+        public void ConsultarProduto()
         {
             string produtoConsulta = "";
 
@@ -128,14 +120,19 @@ namespace Estoque.Classes
                 Console.WriteLine("==================================");
                 Console.WriteLine("");
                 Console.ReadKey();
-                return true;
             }
             Console.ReadKey();
-            return false;
+        }
+
+        //Salvando Informações
+        public void SalvarInfo()
+        {
+            SalvarInformacoesDoBD_Produtos();
+            SalvarInformacoesDoBD_HistoricoProduto();
         }
 
         //Excluir Produto
-        public bool ExcluirProduto()
+        public void ExcluirProduto()
         {
             string produtoExcluir = "";
 
@@ -155,7 +152,6 @@ namespace Estoque.Classes
                     $"{produto.Nome}",
                     $"{produto.CategoriaProdutoId}",
                     $"{produto.QuantidadeProduto}",
-                    $"{produto.PrecoCompra}",
                     $"{produto.DataCadastro}",
                     $"{produto.DataExclusao}"
                 };
@@ -172,13 +168,11 @@ namespace Estoque.Classes
 
                 listaProdutos.Remove(produto.IdProduto);
                 SalvarInformacoesDoBD_Produtos();
-                SalvarInformacoesDoBanco_HistoricoProduco();
+                SalvarInformacoesDoBD_HistoricoProduto();
                 Console.WriteLine("[AVISO!] Produto Excluído com Sucesso!");
                 Console.ReadKey();
-                return true;
             }
             Console.ReadKey();
-            return false;
         }
 
         //Exibir Todas as Categorias
@@ -215,7 +209,7 @@ namespace Estoque.Classes
             }
         }
 
-        private void SalvarInformacoesDoBanco_HistoricoProduco()
+        private void SalvarInformacoesDoBD_HistoricoProduto()
         {
             if (!File.Exists(caminhoBD_HistoricoProduto))
             {
@@ -228,14 +222,14 @@ namespace Estoque.Classes
                 {
                     foreach (string[] produto in historicoProdutos)
                     {
-                        escritor.WriteLine($"{produto[0]}|{produto[1]}|{produto[2]}|{produto[3]}|{produto[4]}|{produto[5]}|{produto[6]}");
+                        escritor.WriteLine($"{produto[0]}|{produto[1]}|{produto[2]}|{produto[3]}|{produto[4]}|{produto[5]}");
                     }
                 }
             }
         }
 
         //Validações
-        public bool ValidarProdutoExcluir(ref string produto)
+        private bool ValidarProdutoExcluir(ref string produto)
         {
             bool produtoCadastrado = false;
 
@@ -310,57 +304,6 @@ namespace Estoque.Classes
             }
         }
 
-        private bool ValidarPrecoProduto(ref double precoProduto)
-        {
-            try
-            {
-                precoProduto = Double.Parse(Console.ReadLine());
-
-                if (precoProduto < 0.01)
-                {
-                    throw new PrecoInvalidoException();
-                }
-                return true;
-            }
-            catch (FormatException ex)
-            {
-                Console.WriteLine(ex.Message);
-                return false;
-            }
-            catch (PrecoInvalidoException ex)
-            {
-                Console.WriteLine(ex.Message);
-                return false;
-            }
-        }
-
-        static bool ValidarOpcao(ref int opcao, int opcaoMaxima)
-        {
-            int opcaoMinima = 1;
-
-            try
-            {
-                opcao = Int32.Parse(Console.ReadLine());
-
-                if (opcao < opcaoMinima || opcao > opcaoMaxima)
-                {
-                    throw new OpcaoInvalidaException();
-                }
-
-                return true;
-            }
-            catch (FormatException ex)
-            {
-                Console.WriteLine(ex.Message);
-                return false;
-            }
-            catch (OpcaoInvalidaException ex)
-            {
-                Console.WriteLine(ex.Message);
-                return false;
-            }
-        }
-
         public bool ValidarSeHaCategoriasCadastradas(CrudCategoriaProduto listaCategoriasProduto)
         {
             try
@@ -420,7 +363,7 @@ namespace Estoque.Classes
         }
 
         //Carregando Dados
-        public void CarregarDados_Produto()
+        private void CarregarDados_Produto()
         {
             if (!File.Exists(caminhoBD_Produtos))
             {
@@ -451,7 +394,7 @@ namespace Estoque.Classes
 
                             do
                             {
-                                Produto1 produto = new Produto1(produtoString[1], Int32.Parse(produtoString[2]), Int32.Parse(produtoString[3]), Double.Parse(produtoString[5]));
+                                Produto1 produto = new Produto1(produtoString[1], Int32.Parse(produtoString[2]), Int32.Parse(produtoString[3]));
 
                                 if (produto.IdProduto == Int32.Parse(produtoString[0]))
                                 {
@@ -461,8 +404,8 @@ namespace Estoque.Classes
                                 }                             
                             } while (idProdutoExiste == false);
 
-                            dataCadastro = DateTime.Parse(produtoString[6]);
-                            dataExclusao = DateTime.Parse(produtoString[7]);
+                            dataCadastro = DateTime.Parse(produtoString[5]);
+                            dataExclusao = DateTime.Parse(produtoString[6]);
 
                             if (IdProduto != -1)
                             {
@@ -507,7 +450,8 @@ namespace Estoque.Classes
                                 historicoProdutoString[0],
                                 historicoProdutoString[1],
                                 historicoProdutoString[2],
-                                historicoProdutoString[3]
+                                historicoProdutoString[3],
+                                historicoProdutoString[4]
                             };
 
                             historicoProdutosTemp.Add(historicoProdutoString);

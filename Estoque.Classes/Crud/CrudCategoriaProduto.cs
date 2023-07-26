@@ -19,8 +19,8 @@ namespace Estoque.Classes
             CarregarDadosCategoriaProduto();
             CarregarDadosHistoricoCategoriaProduto();
         }
-        private string caminhoBD = "BancoDeDados/BD_CategoriaProduto.txt";
-        private string caminhoBD_Historico = "BancoDeDados/BD_HistoricoCategoriaProduto.txt";
+        private string caminhoBD_CategoriaProduto = "BancoDeDados/BD_CategoriaProduto.txt";
+        private string caminhoBD_HistoricoCategoriaProduto = "BancoDeDados/BD_HistoricoCategoriaProduto.txt";
 
         public Dictionary<int, CategoriaProduto> ExibirListaCategoriaProduto()
         {
@@ -32,7 +32,7 @@ namespace Estoque.Classes
             return historicoCategoria;
         }
         //Cadastrar Categoria Produto
-        public bool CadastrarCategoriaProduto()
+        public void CadastrarCategoriaProduto()
         {
             string nomeCategoriaProduto = "";
             Console.Write("Digite o Nome da Nova Categoria de Produto: ");
@@ -50,11 +50,9 @@ namespace Estoque.Classes
                     SalvarInformacoesDoHistorico();
                     SalvarInformacoesDoBanco();
                     Console.ReadKey();
-                    return true;
                 }
             }
             Console.ReadKey();
-            return false;
         }
 
         //Listar Categorias de Produto
@@ -72,7 +70,7 @@ namespace Estoque.Classes
         }
 
         //Consultar Categoria Produto
-        public bool ConsultarCategoriaProduto(CrudProduto listaProdutos)
+        public void ConsultarCategoriaProduto(CrudProduto listaProdutos)
         {
             int idCategoriaProdutoConsulta = 0;
             Console.Write("Digite o ID da Categoria que você Deseja Consultar: ");
@@ -84,18 +82,16 @@ namespace Estoque.Classes
                 Console.WriteLine($"Quantidade de Produtos na Categoria: {CalcularQuantidadeDeProdutosNaCategoria(idCategoriaProdutoConsulta, listaProdutos)}");
                 Console.WriteLine("================================================");
                 Console.ReadKey();
-                return true;
             }
             else
             {
                 Console.WriteLine("ID inválido!");
             }
             Console.ReadKey();
-            return false;
         }
 
         //Excluir Categoria Produto
-        public bool ExcluirCategoriaProduto(Dictionary<int, Produto1> listaProdutos)
+        public void ExcluirCategoriaProduto(Dictionary<int, Produto1> listaProdutos)
         {
             string categoriaExcluir = "";
 
@@ -138,7 +134,6 @@ namespace Estoque.Classes
                     SalvarInformacoesDoHistorico();
                     SalvarInformacoesDoBanco();
                     Console.ReadKey();
-                    return true;
                 }
                 else
                 {
@@ -147,10 +142,25 @@ namespace Estoque.Classes
                 
             }
             Console.ReadKey();
-            return false;
         }
 
-        private bool ValidarCategoriaExcluir(ref string categoria, Dictionary<int, Produto1> listaProdutos)
+        //Calcular Quantidade de Produtos Dentro da Categoria
+        private int CalcularQuantidadeDeProdutosNaCategoria(int idCategoriaProduto, CrudProduto listaProdutos)
+        {
+            int quantidadeProdutosNaCategoria = 0;
+
+            foreach (KeyValuePair<int, Produto1> produto in listaProdutos.ExibirListaProdutos())
+            {
+                if (produto.Value.CategoriaProdutoId == idCategoriaProduto)
+                {
+                    quantidadeProdutosNaCategoria++;
+                }
+            }
+
+            return quantidadeProdutosNaCategoria;
+        }
+
+         private bool ValidarCategoriaExcluir(ref string categoria, Dictionary<int, Produto1> listaProdutos)
         {
             bool categoriaCadastrada = false;
 
@@ -191,51 +201,6 @@ namespace Estoque.Classes
                 return false;
             }
             catch (ProdutosCadastradosNaCategoriaException ex)
-            {
-                Console.WriteLine(ex.Message);
-                return false;
-            }
-        }
-
-        //Calcular Quantidade de Produtos Dentro da Categoria
-        private int CalcularQuantidadeDeProdutosNaCategoria(int idCategoriaProduto, CrudProduto listaProdutos)
-        {
-            int quantidadeProdutosNaCategoria = 0;
-
-            foreach (KeyValuePair<int, Produto1> produto in listaProdutos.ExibirListaProdutos())
-            {
-                if (produto.Value.CategoriaProdutoId == idCategoriaProduto)
-                {
-                    quantidadeProdutosNaCategoria++;
-                }
-            }
-
-            return quantidadeProdutosNaCategoria;
-        }
-
-        //Validações
-
-        static bool ValidarOpcao(ref int opcao, int opcaoMaxima)
-        {
-            int opcaoMinima = 1;
-
-            try
-            {
-                opcao = Int32.Parse(Console.ReadLine());
-
-                if (opcao < opcaoMinima || opcao > opcaoMaxima)
-                {
-                    throw new OpcaoInvalidaException();
-                }
-
-                return true;
-            }
-            catch (FormatException ex)
-            {
-                Console.WriteLine(ex.Message);
-                return false;
-            }
-            catch (OpcaoInvalidaException ex)
             {
                 Console.WriteLine(ex.Message);
                 return false;
@@ -334,12 +299,12 @@ namespace Estoque.Classes
 
         private void SalvarInformacoesDoBanco()
         {
-            if (!File.Exists(caminhoBD))
+            if (!File.Exists(caminhoBD_CategoriaProduto))
             {
-                File.Delete(caminhoBD);
+                File.Delete(caminhoBD_CategoriaProduto);
             }
 
-            using (Stream saida = File.Open(caminhoBD, FileMode.Create))
+            using (Stream saida = File.Open(caminhoBD_CategoriaProduto, FileMode.Create))
             {
                 using (StreamWriter escritor = new StreamWriter(saida))
                 {
@@ -353,12 +318,12 @@ namespace Estoque.Classes
 
         private void SalvarInformacoesDoHistorico()
         {
-            if (!File.Exists(caminhoBD_Historico))
+            if (!File.Exists(caminhoBD_HistoricoCategoriaProduto))
             {
-                File.Delete(caminhoBD_Historico);
+                File.Delete(caminhoBD_HistoricoCategoriaProduto);
             }
 
-            using (Stream saida = File.Open(caminhoBD_Historico, FileMode.Create))
+            using (Stream saida = File.Open(caminhoBD_HistoricoCategoriaProduto, FileMode.Create))
             {
                 using (StreamWriter escritor = new StreamWriter(saida))
                 {
@@ -373,18 +338,18 @@ namespace Estoque.Classes
         //Carregar Dados do Banco de Dados
         private void CarregarDadosCategoriaProduto()
         {
-            if (!File.Exists(caminhoBD))
+            if (!File.Exists(caminhoBD_CategoriaProduto))
             {
-                using (Stream criandoBD = File.Open(caminhoBD, FileMode.Create))
+                using (Stream criandoBD = File.Open(caminhoBD_CategoriaProduto, FileMode.Create))
                 {
-
+                
                 }
             }
             else
             {
                 Dictionary<int, CategoriaProduto> listaCategoriaProdutoTemp = new Dictionary<int, CategoriaProduto>();
 
-                using (Stream bancoDeDados = File.Open(caminhoBD, FileMode.Open))
+                using (Stream bancoDeDados = File.Open(caminhoBD_CategoriaProduto, FileMode.Open))
                 {
                     using (StreamReader leitor = new(bancoDeDados))
                     {
@@ -432,9 +397,9 @@ namespace Estoque.Classes
 
         private void CarregarDadosHistoricoCategoriaProduto()
         {
-            if (!File.Exists(caminhoBD_Historico))
+            if (!File.Exists(caminhoBD_HistoricoCategoriaProduto))
             {
-                using (Stream criandoBD = File.Open(caminhoBD_Historico, FileMode.Create))
+                using (Stream criandoBD = File.Open(caminhoBD_HistoricoCategoriaProduto, FileMode.Create))
                 {
 
                 }
@@ -443,7 +408,7 @@ namespace Estoque.Classes
             {
                 List<string[]> historicoCategoriaTemp = new List<string[]>();
 
-                using (Stream bancoDeDados = File.Open(caminhoBD_Historico, FileMode.Open))
+                using (Stream bancoDeDados = File.Open(caminhoBD_HistoricoCategoriaProduto, FileMode.Open))
                 {
                     using (StreamReader leitor = new(bancoDeDados))
                     {

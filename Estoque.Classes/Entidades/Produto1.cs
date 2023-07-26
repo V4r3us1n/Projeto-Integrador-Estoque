@@ -14,17 +14,14 @@ namespace Estoque.Classes.Entidades
         public string Nome { get; private set; }
         public int QuantidadeProduto = 0;
         private static int quantidadeProdutosCadastrados = 0;
-        public double PrecoCompra { get; private set; }
-        public double PrecoVenda { get; private set; }
 
-        public Produto1(string nome, int categoriaProdutoId, int qtde, double precoCompra)
+        public Produto1(string nome, int categoriaProdutoId, int qtde)
         {
             AdicionarProduto();
             IdProduto = quantidadeProdutosCadastrados;
             CategoriaProdutoId = categoriaProdutoId;
             QuantidadeProduto = qtde;
             Nome = nome;
-            PrecoCompra = precoCompra;
             DataCadastro = DateTime.Now;
         }
 
@@ -55,7 +52,7 @@ namespace Estoque.Classes.Entidades
 
         public override string ToString()
         {
-            return $"{IdProduto};{Nome};{CategoriaProdutoId};{QuantidadeProduto};{quantidadeProdutosCadastrados};{PrecoCompra};{DataCadastro};{DataExclusao}";
+            return $"{IdProduto};{Nome};{CategoriaProdutoId};{QuantidadeProduto};{quantidadeProdutosCadastrados};{DataCadastro};{DataExclusao}";
         }
 
         public string Exibir()
